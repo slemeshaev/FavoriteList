@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class FavoriteListController: UIViewController {
     
@@ -14,12 +15,17 @@ class FavoriteListController: UIViewController {
     @IBOutlet private weak var tableView: UITableView!
     
     // MARK: - Properties
-    private var names: [String] = []
+    private var people: [NSManagedObject] = []
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetch()
     }
     
     // MARK: - IBActions
@@ -33,7 +39,7 @@ class FavoriteListController: UIViewController {
                 return
             }
             
-            self.names.append(nameToSave)
+            self.save(name: nameToSave)
             self.tableView.reloadData()
         }
         
@@ -48,6 +54,44 @@ class FavoriteListController: UIViewController {
     }
     
     // MARK: - Private methods
+    private func save(name: String) {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        
+        let managedContext = appDelegate.persistentContainer.viewContext
+        
+        guard let entity = NSEntityDescription.entity(forEntityName: "Person", in: managedContext) else {
+            return
+        }
+        
+        let person = NSManagedObject(entity: entity, insertInto: managedContext)
+        person.setValue(name, forKey: "name")
+        
+        do {
+            try managedContext.save()
+            people.append(person)
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+        }
+    }
+    
+    private func fetch() {
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+            return
+        }
+        
+        let managedContext = appDelegate.persistentContainer.viewContext
+        
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Person")
+        
+        do {
+            people = try managedContext.fetch(fetchRequest)
+        } catch let error as NSError {
+            print("Could not fetch. \(error), \(error.userInfo)")
+        }
+    }
+    
     private func configureUI() {
         title = "The List"
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
@@ -58,12 +102,15 @@ class FavoriteListController: UIViewController {
 extension FavoriteListController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return names.count
+        return people.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let person = people[indexPath.row]
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.textLabel?.text = names[indexPath.row]
+        cell.textLabel?.text = person.value(forKey: "name") as? String
+        
         return cell
     }
 }
