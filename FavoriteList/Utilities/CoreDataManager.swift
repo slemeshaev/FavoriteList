@@ -47,6 +47,26 @@ class CoreDataManager {
         }
     }
     
+    func removeAll() {
+        let managedContext = managedContext()
+        
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entityName)
+        
+        if let objects = try? managedContext.fetch(fetchRequest) {
+            for object in objects {
+                managedContext.delete(object)
+            }
+        }
+        
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        }
+        
+        people.removeAll()
+    }
+    
     // MARK: - Private
     private func managedContext() -> NSManagedObjectContext {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate

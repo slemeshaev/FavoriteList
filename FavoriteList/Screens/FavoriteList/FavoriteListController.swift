@@ -57,9 +57,13 @@ class FavoriteListController: UIViewController {
         present(alertController, animated: true)
     }
     
+    @IBAction private func clearList(_ sender: UIBarButtonItem) {
+        coreDataManager.removeAll()
+        tableView.reloadData()
+    }
+    
     // MARK: - Private methods
     private func configureUI() {
-        title = "The List"
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
     }
 }
