@@ -61,7 +61,7 @@ class CoreDataManager {
         do {
             try managedContext.save()
         } catch let error as NSError {
-            print(error.localizedDescription)
+            print("Could not save. \(error), \(error.userInfo)")
         }
         
         people.removeAll()
