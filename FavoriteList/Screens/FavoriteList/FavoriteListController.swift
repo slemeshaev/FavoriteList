@@ -15,7 +15,7 @@ class FavoriteListController: UIViewController {
     @IBOutlet private weak var tableView: UITableView!
     
     // MARK: - Properties
-    private let coreDataManager = CoreDataManager()
+    private let coreDataManager = CoreDataStorage()
     
     private var people: [NSManagedObject] {
         return coreDataManager.people

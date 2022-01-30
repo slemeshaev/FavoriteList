@@ -1,5 +1,5 @@
 //
-//  CoreDataManager.swift
+//  CoreDataStorage.swift
 //  FavoriteList
 //
 //  Created by Stanislav Lemeshaev on 08.01.2022.
@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class CoreDataManager {
+class CoreDataStorage {
     
     private let entityName = "Person"
     
